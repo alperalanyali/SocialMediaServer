@@ -20,7 +20,7 @@ app.use(baseUrl+"post/",postRouter);
 app.use(baseUrl+"mail/",mailRouter);
 app.use(baseUrl+"comment/",commentRouter);
 
-const port = process.env.PORT ||4200
+const port = process.env.PORT ||5001
 app.listen(port,()=>{
     console.log(`Listening on ${port} port`);
 })
