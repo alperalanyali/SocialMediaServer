@@ -20,6 +20,12 @@ const userSchema = mongoose.Schema({
         required:[true,"Şifre zorunlu alandır"],
         minlenght:6
     },
+    fullName:{
+        type:String,
+    },
+    avatar:{
+        type:String
+    },
     phone:{
         type:String,    
     },

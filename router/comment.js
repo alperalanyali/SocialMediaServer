@@ -2,9 +2,12 @@ const express = require('express');
 const Comment = require('../models/comment');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
+const response = require('../services/response.service')
+
 router.post("/create",async (req,res)=>{
 
-    let {userId,comment,postId} = req.body;
+    await response(req,res,async ()=>{
+           let {userId,comment,postId} = req.body;
     const newComment = new Comment({
         _id:uuidv4(),
         postId : postId,
@@ -13,13 +16,9 @@ router.post("/create",async (req,res)=>{
         createdDate: new Date()
         
     })
-    try{
-        var result = await newComment.save();
-        res.status(200).json({data:result});
-    }catch(err){
-        res.status(400).json({message:err.message});
-    }
-    
+    var result = await newComment.save();
+    res.status(200).json({data:result});
+    })   
 });
 
 

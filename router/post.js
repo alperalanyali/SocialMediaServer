@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const post = require('../models/post');
 const Post = require("../models/post");
 const router = express.Router();
-
+const response = require('../services/response.service');
 
 const multer  = require('multer')
 //Storage
@@ -21,23 +21,19 @@ const upload = multer({storage: storage});
 var  type =upload.single("imageUrl")
 
 router.post("/createNewPost",type,async(req,res)=>{
-  try {
+  response(req,res,async ()=>{
     let newPost = new Post({
-        _id:uuidv4(),
-        userId: req.body.userId,
-        imageUrl:req.file?.path,
-        content:req.body.content,
-        createdDate: new Date() 
-    })
-    console.log(newPost);
-    const result = await newPost.save();
+      _id:uuidv4(),
+      userId: req.body.userId,
+      imageUrl:req.file?.path,
+      content:req.body.content,
+      createdDate: new Date() 
+  })
+  console.log(newPost);
+  const result = await newPost.save();
 
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(400).json({
-        message:error.message
-    })
-  }
+  res.status(200).json(result);
+  })
     
 })
 
@@ -59,7 +55,6 @@ router.get("/getAll",async(req,res)=>{
       }
     ]
   )
-  console.log(posts)
   res.status(200).json({
     data:posts
   })
