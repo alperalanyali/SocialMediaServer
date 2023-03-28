@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const express = require("express");
 
 const response = require("../services/response.service");
-const errorLog = require('../services/error-log.service');
+const errorLog = require("../services/error-log.service");
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
@@ -15,7 +15,7 @@ router.post("/register", async (req, res) => {
       password: password,
     });
     const result = await newUser.save();
-    res.status(200).json({success:true,result});
+    res.status(200).json({ success: true, result });
   });
 });
 
@@ -39,13 +39,34 @@ router.get("/getUser/:id", async (req, res) => {
     const userId = req.params.id;
     const user = await User.findById(userId);
     if (user != null) {
-      console.log(user);
       res.status(200).json({ success: true, user });
     } else {
       res.status(200).json({ success: false });
-      await errorLog(req,user)
-      
+      await errorLog(req, user);
     }
+  });
+});
+router.post("/updateUser", async (req, res) => {
+  await response(req, res, async () => {
+    const { _id, fullName, email, password, profession } = req.body;
+    let user = await User.findById(_id);
+    let user2 = await User.findByIdAndUpdate(
+      user._id,
+      {
+        fullName: fullName,
+        email: email,
+        profession: profession,
+        password: password,
+      },
+      { new: true }
+    );
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Kullanıcı başarılı şekilde güncellenmiştir",
+        user2,
+      });
   });
 });
 module.exports = router;

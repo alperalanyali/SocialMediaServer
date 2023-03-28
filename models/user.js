@@ -26,9 +26,11 @@ const userSchema = mongoose.Schema({
     avatar:{
         type:String
     },
+    profession:String,
     phone:{
         type:String,    
     },
+    isAdmin:Boolean,
     createdDate:{
         type:Date,
         default: Date.now()
