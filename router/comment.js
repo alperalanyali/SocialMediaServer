@@ -7,11 +7,11 @@ const response = require('../services/response.service')
 router.post("/create",async (req,res)=>{
 
     await response(req,res,async ()=>{
-           let {userId,comment,postId} = req.body;
+           let {commentUserId,comment,postId} = req.body;
     const newComment = new Comment({
         _id:uuidv4(),
         postId : postId,
-        userId:userId,
+        commentUserId:commentUserId,
         comment:comment,
         createdDate: new Date()
         

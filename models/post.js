@@ -10,7 +10,7 @@ const postSchema = mongoose.Schema({
     
     userId:{
         type:String,
-        ref:"Users"
+        ref:"User"
     },
     content:{
         type:String,
@@ -21,6 +21,10 @@ const postSchema = mongoose.Schema({
         type:Number,
         default:0
     },
+    comments:{
+            type:String,
+            ref:'Comment'
+    } ,
     createdDate:{
         type:Date
     }   

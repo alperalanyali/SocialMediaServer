@@ -6,6 +6,24 @@ const response = require("../services/response.service");
 const errorLog = require("../services/error-log.service");
 const router = express.Router();
 
+
+
+const multer = require("multer");
+//Storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+
+//upload
+const upload = multer({ storage: storage });
+var type = upload.single("avatar");
+
+
 router.post("/register", async (req, res) => {
   let { email, username, password } = req.body;
   await response(req, res, async () => {
@@ -46,9 +64,12 @@ router.get("/getUser/:id", async (req, res) => {
     }
   });
 });
-router.post("/updateUser", async (req, res) => {
+router.post("/updateUser",type, async (req, res) => {
   await response(req, res, async () => {
-    const { _id, fullName, email, password, profession } = req.body;
+    const { _id, fullName, email, password, profession,phone,bio } = req.body;
+    
+    console.log(_id);
+    
     let user = await User.findById(_id);
     let user2 = await User.findByIdAndUpdate(
       user._id,
@@ -57,8 +78,11 @@ router.post("/updateUser", async (req, res) => {
         email: email,
         profession: profession,
         password: password,
-      },
-      { new: true }
+        avatar:req.file?.path,
+        bio:bio,
+        phone:phone
+      }
+      // { new: true }
     );
     res
       .status(200)

@@ -1,64 +1,77 @@
-const express = require('express');
-const { v4: uuidv4 } = require('uuid');
-const post = require('../models/post');
+const express = require("express");
+const { v4: uuidv4 } = require("uuid");
+const post = require("../models/post");
 const Post = require("../models/post");
 const router = express.Router();
-const response = require('../services/response.service');
+const response = require("../services/response.service");
 
-const multer  = require('multer')
+const multer = require("multer");
 //Storage
 const storage = multer.diskStorage({
-  destination: function (req, file, cb){
-      cb(null,"uploads/")
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
   },
-  filename: function(req,file,cb){
-      cb(null,Date.now() + "-" + file.originalname)
-  }
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
 });
 
 //upload
-const upload = multer({storage: storage});
-var  type =upload.single("imageUrl")
+const upload = multer({ storage: storage });
+var type = upload.single("imageUrl");
 
-router.post("/createNewPost",type,async(req,res)=>{
-  response(req,res,async ()=>{
+router.post("/createNewPost", type, async (req, res) => {
+  response(req, res, async () => {
     let newPost = new Post({
-      _id:uuidv4(),
+      _id: uuidv4(),
       userId: req.body.userId,
-      imageUrl:req.file?.path,
-      content:req.body.content,
-      createdDate: new Date() 
-  })
-  console.log(newPost);
-  const result = await newPost.save();
+      imageUrl: req.file?.path,
+      content: req.body.content,
+      createdDate: new Date(),
+    });
+    console.log(newPost);
+    const result = await newPost.save();
 
-  res.status(200).json(result);
-  })
-    
-})
+    res.status(200).json(result);
+  });
+});
 
-
-router.get("/getAll",async(req,res)=>{
-  const posts = await Post.aggregate(
-    [
-      {
-        '$lookup': {
-          'from': 'users', 
-          'localField': 'userId', 
-          'foreignField': '_id', 
-          'as': 'user'
-        }
-      }, {
-        '$sort': {
-          'createdDate': -1
-        }
+router.get("/getAll", async (req, res) => {
+  const posts = await Post.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $lookup: {
+        from: "comments",
+        localField: "_id",
+        foreignField: "postId",
+        as: "comments",
+      },
+    },   
+    {
+      $lookup:{
+        from:"likeposts",
+        localField:'_id',
+        foreignField:"postId",
+        as:"likes"
       }
-    ]
-  )
-  res.status(200).json({
-    data:posts
-  })
-})
+    },
+    {
+      $sort: {
+        createdDate: -1,
+      },
+    },
+  ]);
 
+  res.status(200).json({
+    data: posts,
+  });
+});
 
 module.exports = router;

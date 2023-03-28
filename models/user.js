@@ -30,6 +30,9 @@ const userSchema = mongoose.Schema({
     phone:{
         type:String,    
     },
+    bio:{
+        type:String
+    },
     isAdmin:Boolean,
     createdDate:{
         type:Date,
