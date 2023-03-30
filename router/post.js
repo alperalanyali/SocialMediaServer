@@ -40,34 +40,46 @@ router.get("/getAll", async (req, res) => {
   const posts = await Post.aggregate([
     {
       $lookup: {
-        from: "users",
-        localField: "userId",
-        foreignField: "_id",
-        as: "user",
-      },
-    },
-    {
-      $lookup: {
-        from: "comments",
-        localField: "_id",
-        foreignField: "postId",
-        as: "comments",
-      },
-    },   
-    {
-      $lookup:{
-        from:"likeposts",
-        localField:'_id',
-        foreignField:"postId",
-        as:"likes"
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "users"
       }
-    },
-    {
-      $sort: {
-        createdDate: -1,
-      },
-    },
-  ]);
+  },
+  {
+      $lookup: {
+          from: "likeposts",
+          localField: "_id",
+          foreignField: "postId",
+          as: "likes"
+      }
+  },
+  {
+      $lookup: {
+          from: "comments",
+          let: { postId: "$_id" },
+          pipeline: [
+              {
+                  $match: {
+                      $expr: { $eq: ["$postId", "$$postId"] }
+                  }
+              },
+              {
+                  $lookup: {
+                      from: "users",
+                      localField: "commentUserId",
+                      foreignField: "_id",
+                      as: "user"
+                  }
+              },
+              { $unwind: "$user" }
+          ],
+          as: "comments"
+      }
+  }
+ ]).sort({createdDate:-1})
+
+  
 
   res.status(200).json({
     data: posts,
