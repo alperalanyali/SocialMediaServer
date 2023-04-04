@@ -1,5 +1,5 @@
 const express = require('express');
-const LikePost = require('../models/LikePost');
+const LikePost = require('../models/likePost.js')
 const response = require('../services/response.service');
 
 const router = express.Router();
