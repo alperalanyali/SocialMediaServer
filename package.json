@@ -4,8 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    
-    "build":"npm i"
+      "start":"node server.js"
   },
   "author": "",
   "license": "ISC",
