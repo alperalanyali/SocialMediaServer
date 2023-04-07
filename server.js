@@ -20,6 +20,11 @@ app.use(express.json());
 app.use(morgan('dev'))
 app.use(cors());
 
+app.get("/uploads/:imageName",(req,res)=>{
+    const resimAdi = req.params.resimAdi;
+    const resimPath = path.join(__dirname, 'public', 'resimler', resimAdi);
+    res.sendFile(resimPath);
+})
 connectMongDb().then();
 app.use(baseUrl+"auth/",authRouter);
 app.use(baseUrl+"post/",postRouter);
