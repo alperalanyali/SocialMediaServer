@@ -22,7 +22,7 @@ app.use(cors());
 
 app.get("/uploads/:imageName",(req,res)=>{
     const resimAdi = req.params.resimAdi;
-    const resimPath = path.join(__dirname, 'public', 'resimler', resimAdi);
+    const resimPath = path.join(__dirname, 'uploads', 'resimler', resimAdi);
     res.sendFile(resimPath);
 })
 connectMongDb().then();
