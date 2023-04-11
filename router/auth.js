@@ -1,11 +1,12 @@
 const User = require("../models/user");
 const { v4: uuidv4 } = require("uuid");
 const express = require("express");
-
+const stream = require("stream");
+const path = require("path");
 const response = require("../services/response.service");
 const errorLog = require("../services/error-log.service");
 const router = express.Router();
-
+const {uploadFile} = require('../commons/googlefileupload');
 
 
 const multer = require("multer");
@@ -20,7 +21,8 @@ const storage = multer.diskStorage({
 });
 
 //upload
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
+const upload = multer();
 var type = upload.single("avatar");
 
 
@@ -41,6 +43,7 @@ router.post("/login", async (req, res) => {
   let { email, password } = req.body;
   await response(req, res, async () => {
     var result = await User.findOne({ email: email, password: password });
+    console.log(result);
     if (result != null) {
       res.status(200).json({ success: true, result });
     } else {
@@ -68,9 +71,9 @@ router.post("/updateUser",type, async (req, res) => {
   await response(req, res, async () => {
     const { _id, fullName, email, password, profession,phone,bio } = req.body;
     
-    console.log(_id);
-    
     let user = await User.findById(_id);
+    let photoId = await uploadFile(req.file);
+    console.log(req.file);
     let user2 = await User.findByIdAndUpdate(
       user._id,
       {
@@ -78,18 +81,18 @@ router.post("/updateUser",type, async (req, res) => {
         email: email,
         profession: profession,
         password: password,
-        avatar:req.file?.path,
+        avatar:photoId,
         bio:bio,
         phone:phone
       }
-      // { new: true }
+    //   // { new: true }
     );
     res
       .status(200)
       .json({
         success: true,
         message: "Kullanıcı başarılı şekilde güncellenmiştir",
-        user2,
+         photoId
       });
   });
 });
